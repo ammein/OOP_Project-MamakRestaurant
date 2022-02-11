@@ -115,6 +115,45 @@ public class Data_Access {
 		}
 	}
 	
+	public boolean editFoodMenu(Food food) {
+		try {
+			
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM mamakFoods INNER JOIN mamakIngredients ON mamakFoods.INGREDIENT_ID=mamakIngredients.ingredientId WHERE foodName=? ");
+			statement.setString(1,food.getFoodName());
+			
+			ResultSet result = statement.executeQuery();
+			
+			if(result.next()) {
+				try{
+					int loop = 0;
+					for(Ingredient ingredient : food.getIngredient()) {
+						if(result.getInt("INGREDIENT_ID") == food.getIngredient().get(loop).getId()) {
+							PreparedStatement s = connection.prepareStatement("UPDATE mamakFoods SET foodName=?, foodPrice=? WHERE INGREDIENT_ID=?");
+							s.setString(1, food.getFoodName());
+							s.setBigDecimal(2, food.getPrice());
+							s.setInt(3, food.getIngredient().get(loop).getId());
+							s.executeUpdate();
+						} else {
+							PreparedStatement s = connection.prepareStatement("INSERT INTO mamakFoods (foodName, foodPrice, INGREDIENT_ID) VALUES(?, ?, ?)");
+							s.setString(1, food.getFoodName());
+							s.setBigDecimal(2, food.getPrice());
+							s.setInt(3, food.getIngredient().get(loop).getId());
+							s.executeUpdate();
+						}
+						loop++;
+					}
+					return true;
+				}catch(Exception e) {
+					return false;
+				}
+			}
+			
+			return false;
+		}catch(Exception e) {
+			return false;
+		}
+	}
+	
 	public ArrayList<Food> getFoodMenu() {
 		try {
 			ArrayList<Food> foods = new ArrayList<Food>(); 
@@ -147,16 +186,17 @@ public class Data_Access {
 	public boolean removeFoodMenu(Food food) {
 		try {
 			
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM mamakIngredients WHERE ingredientName=?");
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM mamakFoods INNER JOIN mamakIngredients ON mamakFoods.INGREDIENT_ID=mamakIngredients.ingredientId WHERE foodName=?");
 			statement.setString(1,food.getFoodName());
 			
 			ResultSet result = statement.executeQuery();
-			
+			int index = 0;
 			if(result.next()) {
 				try{
 					PreparedStatement s = connection.prepareStatement("DELETE FROM mamakFoods WHERE foodName=?");
 					s.setString(1, food.getFoodName());
 					s.executeUpdate();
+					index++;
 					return true;
 				}catch(Exception e) {
 					return false;

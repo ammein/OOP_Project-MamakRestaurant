@@ -85,12 +85,11 @@ public class MamakOrderingSystem extends JPanel  {
 		tabbedPane.addTab("Order Item", null, Order_Item, null);
 		Order_Item.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		
-		
-		Food_Manager = new JPanel();
-		tabbedPane.addTab("Food Manager", null, Food_Manager, null);
-		Food_Manager.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-		
 		if(user.getPermission() == 0) {
+			Food_Manager = new JPanel();
+			tabbedPane.addTab("Food Manager", null, Food_Manager, null);
+			Food_Manager.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+			
 			Ingredient_Manager = new JPanel();
 			tabbedPane.addTab("Ingredient Manager", null, Ingredient_Manager, null);
 			Ingredient_Manager.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
@@ -143,11 +142,11 @@ public class MamakOrderingSystem extends JPanel  {
 		
 	}
 	
-	public static void refreshIngredient() {
+	public static void refreshTab(String tabName) {
 		Ingredient_Manager.removeAll();
 		int allTabs = tabbedPane.getTabCount();
 		for(int checkTabOn = 0; checkTabOn < allTabs; checkTabOn++) {
-			if(tabbedPane.getTitleAt(checkTabOn).contentEquals("Ingredient Manager")){
+			if(tabbedPane.getTitleAt(checkTabOn).contentEquals(tabName)){
 				tabbedPane.setSelectedIndex(0);
 				tabbedPane.setSelectedIndex(checkTabOn);
 			}
@@ -212,18 +211,20 @@ public class MamakOrderingSystem extends JPanel  {
 
         } else if(tabbedPane.getTitleAt(selectedIndex).contentEquals("Food Manager")) {
     		// Insert into manager
-        	FoodManager foodInventory = getFoodInventory(); 
-        	if(foodInventory != null & foodInventory.getDatabase().size() > 0) {
-        		switch(user.getPermission()) {
-        			case 0:
-        					for(Map.Entry<String, Food> food: foodInventory.getDatabase().entrySet()) {
-        						Food_Manager.add(displayFoods(food.getValue()));
-        					}
-        				break;
-        			
-        		}
-        	} else {
-        		JLabel Empty_States_Text = new JLabel("There are no ingredients at the moment");
+        	try {
+        		FoodManager foodInventory = getFoodInventory(); 
+        		if(foodInventory != null & foodInventory.getDatabase().size()> 0) {
+            		switch(user.getPermission()) {
+            			case 0:
+            					for(Map.Entry<String, Food> food: foodInventory.getDatabase().entrySet()) {
+            						Food_Manager.add(displayFoods(food.getValue()));
+            					}
+            				break;
+            			
+            		}
+            	}
+        	}catch(Exception exception) {
+        		JLabel Empty_States_Text = new JLabel("There are no food(s) available at the moment");
         		Empty_States_Text.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
         		Empty_States_Text.setHorizontalAlignment(SwingConstants.CENTER);
         		Food_Manager.add(Empty_States_Text);
@@ -318,8 +319,15 @@ public class MamakOrderingSystem extends JPanel  {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				FoodSetup remove_food = new FoodSetup();
-				Main.newPanel(remove_food, "Remove Ingredient: " + food.getFoodName());
+				FoodManager foodManager = new FoodManager(food);
+				JComponent comp = (JComponent) e.getSource();
+				Window win = SwingUtilities.getWindowAncestor(comp);
+				
+				if(foodManager.removeFoodDB(food)) {
+					refreshTab("Food Manager");
+				} else {
+					Main.newPanel(new Message("Error deleting food item from the list!", "Please try again on adding your food item to the list"), "ERROR");
+				}
 			}
 			
 		});

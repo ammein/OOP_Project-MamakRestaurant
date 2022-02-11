@@ -51,6 +51,15 @@ public class FoodManager {
 		}
 	}
 	
+	public boolean editFoodDB(Food food) {
+		Data_Access DOA = new Data_Access();
+		try {
+			return DOA.editFoodMenu(food);
+		} catch(Exception e) {
+			return false;
+		}
+	}
+	
 	public boolean removeFoodDB(Food food) {
 		Data_Access DOA = new Data_Access();
 		

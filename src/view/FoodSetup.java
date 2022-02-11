@@ -30,6 +30,8 @@ public class FoodSetup extends JPanel {
 	private JButton add_more;
 	private JLabel title;
 	private String splitLater;
+	private ActionListener addListener;
+	private ActionListener editListener;
 	
 	@SuppressWarnings("unchecked")
 	public FoodSetup() {
@@ -50,7 +52,7 @@ public class FoodSetup extends JPanel {
 		add_more = new JButton("Add");
 		add_more.setForeground(new Color(0, 0, 0));
 		add_more.setBackground(new Color(90, 50, 215));
-		add_more.addActionListener(new ActionListener() {
+		addListener = new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -70,7 +72,11 @@ public class FoodSetup extends JPanel {
 				addFood(newFood, e);
 			}
 			
-		});
+		};
+		if(editListener != null) {
+			add_more.removeActionListener(editListener);
+		}
+		add_more.addActionListener(addListener);
 		Button_Area.add(add_more);
 		
 		JButton cancel = new JButton("Cancel");
@@ -175,6 +181,36 @@ public class FoodSetup extends JPanel {
 			}
 		}
 		
+		add_more.setText("Edit");
+		add_more.removeActionListener(addListener);
+		add_more.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				int i = 0;
+				for(int selected: IngredientList.getSelectedIndices()) {
+					if(!IngredientList.getModel().getElementAt(i).toString().contentEquals(food.getIngredient().get(i).getName())) {
+						food.addIngredient(new Ingredient(IngredientList.getModel().getElementAt(i).toString()));
+						i++;
+					}
+				}
+				FoodManager foodManager = new FoodManager(food);
+				JComponent comp = (JComponent) e.getSource();
+				Window win = SwingUtilities.getWindowAncestor(comp);
+				
+				if(foodManager.editFoodDB(food)) {
+					win.dispose();
+				} else {
+					Food_Name.setText("");
+					IngredientList.clearSelection();
+					Main.newPanel(new Message("Error adding food item to the list!", "Please try again on adding your food item to the list"), "ERROR");
+				}
+			}
+			
+		});
+		title.setText("Edit Food Item");
+		
 		IngredientList.setSelectedIndices(select);
 	}
 	
@@ -182,20 +218,6 @@ public class FoodSetup extends JPanel {
 		FoodManager foodManager = new FoodManager(food);
 		JComponent comp = (JComponent) e.getSource();
 		Window win = SwingUtilities.getWindowAncestor(comp);
-		if(foodManager.addFoodDB()) {
-			win.dispose();
-		} else {
-			Food_Name.setText("");
-			IngredientList.clearSelection();
-			Main.newPanel(new Message("Error adding food item to the list!", "Please try again on adding your food item to the list"), "ERROR");
-		}
-	}
-	
-	public void removeFood(Food food, ActionEvent e) {
-		FoodManager foodManager = new FoodManager(food);
-		JComponent comp = (JComponent) e.getSource();
-		Window win = SwingUtilities.getWindowAncestor(comp);
-		
 		if(foodManager.addFoodDB()) {
 			win.dispose();
 		} else {

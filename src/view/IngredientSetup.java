@@ -111,7 +111,7 @@ public class IngredientSetup extends JPanel implements ActionListener {
 						
 						if(IM.insertDB()) {
 							win.dispose();
-							MamakOrderingSystem.refreshIngredient();
+							MamakOrderingSystem.refreshTab("Ingredient Manager");
 						}else {
 							Ingredient_Name.setText("");
 							Quantity.setValue(0);
@@ -128,7 +128,7 @@ public class IngredientSetup extends JPanel implements ActionListener {
 						if(get_ingredient.getKey().contentEquals(Ingredient_Name.getText())) {
 							if(IM.editDB(get_ingredient.getKey())) {
 								win.dispose();
-								MamakOrderingSystem.refreshIngredient();
+								MamakOrderingSystem.refreshTab("Ingredient Manager");
 							}else {
 								Ingredient_Name.setText("");
 								Quantity.setValue(0);
@@ -141,7 +141,7 @@ public class IngredientSetup extends JPanel implements ActionListener {
 				case "Remove":
 						if(IM.removeDB(ingredient.getName())) {
 							win.dispose();
-							MamakOrderingSystem.refreshIngredient();
+							MamakOrderingSystem.refreshTab("Ingredient Manager");
 						} else {
 							Main.newPanel(new Message("Error removing the ingredient from the list", "Try remove the ingredient again"), "Error");
 						}
