@@ -1,0 +1,12 @@
+IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'mamakIngredients')
+BEGIN
+	CREATE TABLE mamakIngredients (ingredientId int IDENTITY(1,1) NOT NULL, ingredientName varchar(255) NOT NULL, ingredientCount int, PRIMARY KEY(ingredientId));
+END;
+IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'staffMember')
+BEGIN
+	CREATE TABLE staffMember(userID int IDENTITY(100,1) NOT NULL, username varchar(255) NOT NULL, passwordHashed nvarchar(64) NOT NULL, permission int NOT NULL);
+END;
+IF NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'mamakFoods')
+BEGIN
+	CREATE TABLE mamakFoods(foodID int IDENTITY(100,1) NOT NULL, foodName varchar(255) NOT NULL, foodPrice DECIMAL(10,2) NOT NULL , INGREDIENT_ID int, PRIMARY KEY(foodID), CONSTRAINT FK_Ingredients FOREIGN KEY (INGREDIENT_ID) REFERENCES mamakIngredients(ingredientId));
+END ;
