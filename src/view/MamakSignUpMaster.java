@@ -115,7 +115,7 @@ public class MamakSignUpMaster extends JPanel {
 			JComponent comp = (JComponent) e.getSource();
 			Window win = SwingUtilities.getWindowAncestor(comp);
 			win.dispose();
-			Main.mainPanel(new MamakLogin());
+			Main.newPanel(new MamakLogin(), "Login");
 		}else {
 			signUpStatus = false;
 			System.out.println("Unsuccessful sign up new user");
